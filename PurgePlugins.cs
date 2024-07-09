@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Oxide.Plugins
 {
-    [Info("PurgePlugins", "SiCkNeSs", "1.0.0")]
+    [Info("PurgePlugins", "SiCkNeSs", "1.0.1")]
     [Description("Unload/Load plugins you specify for purge or other events")]
     partial class PurgePlugins : RustPlugin
     {
@@ -24,18 +24,50 @@ namespace Oxide.Plugins
 
             if (arg.Args == null || arg.Args.Length == 0 || arg.Args[0].ToLower() == "unload")
             {
+                //unload plugins
                 loadPlugins(configData.LoadPlugins, false);
+
+                if (configData.BroadcastUnload)
+                {
+                    foreach (var broadcastMessage in configData.BroadcastMessagesUnload)
+                    {
+                        if (string.IsNullOrEmpty(configData.BroadcastPrefix))
+                        {
+                            Server.Broadcast(broadcastMessage);
+                        }
+                        else
+                        {
+                            Server.Broadcast(broadcastMessage, configData.BroadcastPrefix);
+                        }
+                    }
+                }
             }
             else
             {
                 if (arg.Args[0].ToLower() == "load")
                 {
+                    //load plugins
                     loadPlugins(configData.LoadPlugins);
+
+                    if (configData.BroadcastUnload)
+                    {
+                        foreach (var broadcastMessage in configData.BroadcastMessagesLoad)
+                        {
+                            if (string.IsNullOrEmpty(configData.BroadcastPrefix))
+                            {
+                                Server.Broadcast(broadcastMessage);
+                            }
+                            else
+                            {
+                                Server.Broadcast(broadcastMessage, configData.BroadcastPrefix);
+                            }
+                        }
+                    }
                 }
             }
 
             //10 second delay to allow plugins to load/unload properly before reloading others
-            timer.Once(10, () => reloadPlugins(configData.ReloadPlugins));
+            timer.Once(configData.ReloadTime, () => reloadPlugins(configData.ReloadPlugins));
             
         }
         #endregion Commands
@@ -94,6 +126,24 @@ namespace Oxide.Plugins
 
             [JsonProperty("Plugins to reload (Case Sensitive)")]
             public string[] ReloadPlugins = { "PVxZoneStatus" };
+
+            [JsonProperty("Seconds before reloading plugins from reload list (10 default)")]
+            public int ReloadTime = 10;
+
+            [JsonProperty("Broadcast Prefix")]
+            public string BroadcastPrefix = "ADMIN:";
+
+            [JsonProperty(PropertyName = "Send broadcasts on unload")]
+            public bool BroadcastUnload = false;
+
+            [JsonProperty("Messages to broadcast on plugin list unload")]
+            public string[] BroadcastMessagesUnload = { "PURGE IS LIVE!", "PURGE IS LIVE!", "PURGE IS LIVE!" };
+
+            [JsonProperty(PropertyName = "Send broadcasts on load")]
+            public bool BroadcastLoad = false;
+
+            [JsonProperty("Messages to broadcast on plugin list load")]
+            public string[] BroadcastMessagesLoad = { "PURGE IS OVER!", "PURGE IS OVER!", "PURGE IS OVER!" };
         }
 
         protected override void LoadConfig()
