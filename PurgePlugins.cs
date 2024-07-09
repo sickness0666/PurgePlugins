@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Oxide.Plugins
 {
-    [Info("PurgePlugins", "SiCkNeSs", "1.0.1")]
+    [Info("PurgePlugins", "SiCkNeSs", "1.0.2")]
     [Description("Unload/Load plugins you specify for purge or other events")]
     partial class PurgePlugins : RustPlugin
     {
@@ -131,7 +131,7 @@ namespace Oxide.Plugins
             public int ReloadTime = 10;
 
             [JsonProperty("Broadcast Prefix")]
-            public string BroadcastPrefix = "ADMIN:";
+            public string BroadcastPrefix = "ADMIN";
 
             [JsonProperty(PropertyName = "Send broadcasts on unload")]
             public bool BroadcastUnload = false;

@@ -38,7 +38,7 @@ Use case example: Purge on a PVE server. This can also be done via other plugins
     "PVxZoneStatus"
   ],
   "Seconds before reloading plugins from reload list (10 default)": 10,
-  "Broadcast Prefix": "ADMIN:",
+  "Broadcast Prefix": "ADMIN",
   "Send broadcasts on unload": false,
   "Messages to broadcast on plugin list unload": [
     "PURGE IS LIVE!",
